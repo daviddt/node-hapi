@@ -5,32 +5,32 @@ language: python
 services:
   - docker
 
-branches:
-  only:
-    - master
+if [ $TRAVIS_BRANCH = 'develop' ]; then 
 
-    install:
-    - docker build -t daviddentoom/node-hapi .
-    - docker run -d -p 3000:3000 --name node-hapi daviddentoom/node-hapi
-    
-    script:
-    - docker ps | grep -q node-hapi
+install:
+  - docker build -t daviddentoom/node-hapi:develop .
+  - docker run -d -p 3000:3000 --name node-hapi daviddentoom/node-hapi:develop
+  
+script:
+  - docker ps | grep -q node-hapi
 
-    after_success:
-    - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-    - docker push daviddentoom/node-hapi
-    
-branches:
-  only:
-    - develop
+after_success:
+  - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+  - docker push daviddentoom/node-hapi:develop
+  
+fi
 
-    install:
-    - docker build -t daviddentoom/node-hapi:develop .
-    - docker run -d -p 3000:3000 --name node-hapi daviddentoom/node-hapi:develop
-    
-    script:
-    - docker ps | grep -q node-hapi
+if [ $TRAVIS_BRANCH = 'master' ]; then 
 
-    after_success:
-    - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-    - docker push daviddentoom/node-hapi:develop
+install:
+  - docker build -t daviddentoom/node-hapi .
+  - docker run -d -p 3000:3000 --name node-hapi daviddentoom/node-hapi
+  
+script:
+  - docker ps | grep -q node-hapi
+
+after_success:
+  - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+  - docker push daviddentoom/node-hapi
+  
+fi
