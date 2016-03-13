@@ -1,0 +1,17 @@
+sudo: required
+
+language: python
+
+services:
+  - docker
+
+install:
+  - docker build -t daviddentoom/node-hapi .
+  - docker run -d -p 3000:3000 --name node-hapi daviddentoom/node-hapi
+  
+script:
+  - docker ps | grep -q node-hapi
+
+after_success:
+  - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+  - docker push daviddentoom/node-hapi
